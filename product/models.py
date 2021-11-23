@@ -22,6 +22,7 @@ class Product(models.Model):
         verbose_name='Tipo'
     )
 
+
     @staticmethod
     def resize_image(img, new_width=800):
         image_full_path = os.path.join(settings.MEDIA_ROOT, img.name)
