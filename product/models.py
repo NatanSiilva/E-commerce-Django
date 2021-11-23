@@ -51,3 +51,24 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        verbose_name = 'Produto'
+        verbose_name_plural = 'Produtos'
+
+
+class Variation(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    name = models.CharField(
+        max_length=50, verbose_name='Nome', blank=True, null=True)
+    price = models.FloatField(verbose_name='Preço',)
+    promotional_price = models.FloatField(
+        default=0.00, verbose_name='Preço de venda')
+    inventory = models.PositiveIntegerField(verbose_name='Estoque', default=1)
+
+    def __str__(self):
+        return self.name or self.product.name
+
+    class Meta:
+        verbose_name = 'Variação'
+        verbose_name_plural = 'Variações'
