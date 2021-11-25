@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.utils.text import slugify
 from PIL import Image
 import os 
 
@@ -9,18 +10,27 @@ class Product(models.Model):
     short_description = models.TextField(max_length=255, verbose_name='Descrição curta')
     long_description = models.TextField(verbose_name='Descrição longa')
     image = models.ImageField(upload_to='product_images/%y/%m', blank=True, null=True, verbose_name='Imagem')
-    slug = models.SlugField(unique=True, verbose_name='Slug')
+    slug = models.SlugField(verbose_name='Slug', unique=True, null=True, blank=True)
     marketing_price = models.FloatField(verbose_name='Preço de venda')
     promotional_marketing_price = models.FloatField(default=0.00, verbose_name='Preço de venda promocional')
     type = models.CharField(
         default='V',
         max_length=1,
         choices=(
-            ('V', 'Variação'),
+            ('V', 'Variável'),
             ('S', 'Simples'),
         ),
         verbose_name='Tipo'
     )
+
+    def get_price_format(self):
+        return f'R$ {self.marketing_price:.2f}'.replace('.', ',')
+    get_price_format.short_description = 'Preço de venda'
+
+    def get_promotional_price_format(self):
+        return f'R$ {self.promotional_marketing_price:.2f}'.replace('.', ',')
+    get_promotional_price_format.short_description = 'Preço promocional'
+
 
 
     @staticmethod
@@ -43,6 +53,10 @@ class Product(models.Model):
         )
 
     def save(self, *args, **kwargs):
+        if not self.slug:
+            slug = f'{slugify(self.name)}'
+            self.slug = slug
+
         super().save(*args, **kwargs)
 
         max_image_size = 800
@@ -64,7 +78,7 @@ class Variation(models.Model):
         max_length=50, verbose_name='Nome', blank=True, null=True)
     price = models.FloatField(verbose_name='Preço',)
     promotional_price = models.FloatField(
-        default=0.00, verbose_name='Preço de venda')
+        default=0.00, verbose_name='Preço de promocional')
     inventory = models.PositiveIntegerField(verbose_name='Estoque', default=1)
 
     def __str__(self):
