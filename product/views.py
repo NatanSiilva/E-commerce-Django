@@ -2,11 +2,15 @@ from django.shortcuts import render
 from django.views.generic import ListView
 from django.views import View
 from django.http import HttpResponse
+from django.views.generic.base import TemplateResponseMixin
+from . import models
 
 
 class ListProduct(ListView):
-    def get(self, request, *args, **kwargs):
-        return HttpResponse('List Product')
+    model = models.Product
+    template_name = 'product/list.html'
+    context_object_name = 'products'
+    paginate_by = 3
 
 
 class DetailsProduct(View):

@@ -1,18 +1,23 @@
 from django.db import models
 from django.conf import settings
 from django.utils.text import slugify
+from utils import utils
 from PIL import Image
-import os 
+import os
 
 
 class Product(models.Model):
     name = models.CharField(max_length=255, verbose_name='Nome')
-    short_description = models.TextField(max_length=255, verbose_name='Descrição curta')
+    short_description = models.TextField(
+        max_length=255, verbose_name='Descrição curta')
     long_description = models.TextField(verbose_name='Descrição longa')
-    image = models.ImageField(upload_to='product_images/%y/%m', blank=True, null=True, verbose_name='Imagem')
-    slug = models.SlugField(verbose_name='Slug', unique=True, null=True, blank=True)
+    image = models.ImageField(
+        upload_to='product_images/%y/%m', blank=True, null=True, verbose_name='Imagem')
+    slug = models.SlugField(verbose_name='Slug',
+                            unique=True, null=True, blank=True)
     marketing_price = models.FloatField(verbose_name='Preço de venda')
-    promotional_marketing_price = models.FloatField(default=0.00, verbose_name='Preço de venda promocional')
+    promotional_marketing_price = models.FloatField(
+        default=0.00, verbose_name='Preço de venda promocional')
     type = models.CharField(
         default='V',
         max_length=1,
@@ -24,14 +29,12 @@ class Product(models.Model):
     )
 
     def get_price_format(self):
-        return f'R$ {self.marketing_price:.2f}'.replace('.', ',')
+        return utils.format_price(self.marketing_price)
     get_price_format.short_description = 'Preço de venda'
 
     def get_promotional_price_format(self):
-        return f'R$ {self.promotional_marketing_price:.2f}'.replace('.', ',')
+        return utils.format_price(self.promotional_marketing_price)
     get_promotional_price_format.short_description = 'Preço promocional'
-
-
 
     @staticmethod
     def resize_image(img, new_width=800):
