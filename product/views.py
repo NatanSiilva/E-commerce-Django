@@ -45,12 +45,11 @@ class AddToCartProduct(View):
         variation_name = variation.name or ''
         unit_price = variation.price
         promotional_unit_price = variation.promotional_price
-        quantity = 1
         slug = product.slug
         image = product.image
 
         if image:
-            image = image.name
+            image = image.url
         else:
             image = ''
 
@@ -107,12 +106,33 @@ class AddToCartProduct(View):
 
 class RemoveFromCartProduct(View):
     def get(self, request, *args, **kwargs):
-        return HttpResponse('Remove From Cart Product')
+        http_referer = request.META.get(
+            'HTTP_REFERER', reverse('product:list'))
+        variation_id = request.GET.get('vid')
+
+        cart = request.session.get('cart')
+
+        if not variation_id:
+            return redirect(http_referer)
+
+        if not cart:
+            return redirect(http_referer)
+
+        if variation_id in cart:
+            del cart[variation_id]
+
+        request.session.save()
+        messages.success(request, 'Produto removido do carrinho')
+        return redirect(http_referer)
 
 
 class Cart(View):
     def get(self, request, *args, **kwargs):
-        return render(request, 'product/cart.html')
+        cart = request.session.get('cart', {})
+        context = {
+            'cart': cart
+        }
+        return render(request, 'product/cart.html', context)
 
 
 class Finish(View):
