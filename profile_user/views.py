@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView
 from django.views import View
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
 from . import models
 from . import forms
@@ -29,17 +30,24 @@ class BaseProfile(View):
                     user=self.request.user,
                     instance=self.request.user
                 ),
-                'profileform': forms.ProfileForm(data=self.request.POST or None),
+                'profileform': forms.ProfileForm(
+                    data=self.request.POST or None,
+                    instance=self.profile
+                ),
             }
         else:
             self.context = {
                 'userform': forms.UserForm(data=self.request.POST or None),
                 'profileform': forms.ProfileForm(data=self.request.POST or None),
             }
-        self.render = render(self.request, self.template_name, self.context)
 
         self.userform = self.context['userform']
         self.profileform = self.context['profileform']
+
+        if self.request.user.is_authenticated:
+            self.template_name = 'profile/update.html'
+
+        self.render = render(self.request, self.template_name, self.context)
 
     def get(self, *args, **kwargs):
         return self.render
@@ -59,7 +67,7 @@ class CreateProfile(BaseProfile):
 
         if self.request.user.is_authenticated:
             user = get_object_or_404(User, username=self.request.user.username)
-            
+
             user.username = username
             user.email = email
             user.first_name = first_name
@@ -69,8 +77,16 @@ class CreateProfile(BaseProfile):
                 user.set_password(password)
 
             user.save()
+            
+            if not self.profile:
+                self.profileform.cleaned_data['user'] = user
+                profile = models.ProfileUser(**self.profileform.cleaned_data)
+                profile.save()
+            else:
+                profile = self.profileform.save(commit=False)
+                profile.user = user
+                profile.save()
         else:
-            pass
             user = self.userform.save(commit=False)
             user.set_password(password)
             user.save()
@@ -79,11 +95,18 @@ class CreateProfile(BaseProfile):
             profile.user = user
             profile.save()
 
+        if password:
+            authenticated_user = authenticate(
+                self.request, username=user, password=password
+            )
+
+            if authenticated_user:
+                login(self.request, user)
+
         self.request.session['cart'] = self.cart
         self.request.session.save()
 
         return self.render
-
 
 
 class UpdateProfile(View):

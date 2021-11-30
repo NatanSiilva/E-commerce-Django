@@ -3,16 +3,19 @@
 {% block content %}
 
 <div class="row">
-   <div class="col-lg">
-      <h1>Login</h1>
-   </div>
+   {% if not request.user.is_authenticated %}   
+      <div class="col-lg">
+         <h1>Login</h1>
+      </div>
+   {% endif %}
+
    <div class="col-lg">
       <h1>Cadastro</h1>
 
       <form action="" method="POST">
          {% csrf_token %} 
          {{ userform|crispy }}
-         {% comment %} {{ profileform|crispy }} {% endcomment %}
+         {{ profileform|crispy }}
 
          <div class="row">
             <div class="col">

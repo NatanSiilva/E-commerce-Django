@@ -44,6 +44,7 @@ INSTALLED_APPS = [
 
     # TODO: remove debug toobar in production
     "debug_toolbar",
+    "crispy_forms",
 ]
 
 MIDDLEWARE = [
@@ -173,3 +174,5 @@ INTERNAL_IPS = [
     "127.0.0.1",
     # ...
 ]
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'

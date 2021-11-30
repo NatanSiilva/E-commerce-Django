@@ -63,10 +63,11 @@ class UserForm(forms.ModelForm):
             if password_data:
                 if password_data != password_confirmation_data:
                     validation_error_message['password'] = error_msg_password_match
+                    validation_error_message['password_confirmation'] = error_msg_password_match
                 if len(password_data) < 6:
                     validation_error_message['password_confirmation'] = error_msg_password
         else:
-            if  user_db:
+            if user_db:
                 validation_error_message['username'] = error_msg_user_exists
             if email_db:
                 validation_error_message['email'] = error_msg_email_exists
@@ -76,6 +77,7 @@ class UserForm(forms.ModelForm):
                 validation_error_message['password'] = error_msg_required_field
             if password_data != password_confirmation_data:
                 validation_error_message['password'] = error_msg_password_match
+                validation_error_message['password_confirmation'] = error_msg_password_match
             if len(password_data) < 6:
                 validation_error_message['password_confirmation'] = error_msg_password
 
