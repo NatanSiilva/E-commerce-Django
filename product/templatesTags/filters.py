@@ -12,3 +12,8 @@ def format_price(value):
 @register.filter
 def cart_total_qtd(cart):
     return utils.cart_total_qtd(cart)
+
+
+@register.filter
+def cart_totals(carrinho):
+    return utils.cart_totals(carrinho)

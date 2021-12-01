@@ -1,0 +1,79 @@
+{% extends 'base.html' %} 
+{% block content %}
+{% load filters %}
+
+<div class="row mb-5">
+   <div class="col-lg">
+      <h2>Resumo da sua compra</h2>
+
+      <p class="lead">Dados do usuário</p>
+      <p>Caso precise editar, <a href="{% url 'profile:create' %}">clique aqui</a></p>
+      <dl class="row">
+         <dt class="col-lg-2">Nome:</dt>
+         <dd class="col-lg-4">{{ user.first_name }}</dd>
+         <dt class="col-lg-2">Sobrenome:</dt>
+         <dd class="col-lg-4">{{ user.last_name }}</dd>
+
+         <dt class="col-lg-2">Idade:</dt>
+         <dd class="col-lg-4">{{ user.profileuser.age }}</dd>
+         <dt class="col-lg-2">Nascimento:</dt>
+         <dd class="col-lg-4">{{ user.profileuser.birth_date }}</dd>
+
+         <dt class="col-lg-2">CPF:</dt>
+         <dd class="col-lg-4">{{ user.profileuser.cpf }}</dd>
+         <dt class="col-lg-2">E-mail:</dt>
+         <dd class="col-lg-4">{{ user.email }}</dd>
+      </dl>
+
+      <p class="lead">Dados de endereço</p>
+      <p>Caso precise editar, <a href="{% url 'profile:create' %}">clique aqui</a></p>
+      <dl class="row">
+         <dt class="col-lg-2">Endereço:</dt>
+         <dd class="col-lg-4">{{ user.profileuser.address }}</dd>
+         <dt class="col-lg-2">Número:</dt>
+         <dd class="col-lg-4">{{ user.profileuser.number }}</dd>
+
+         <dt class="col-lg-2">Complemento:</dt>
+         <dd class="col-lg-4">{{ user.profileuser.complement }}</dd>
+         <dt class="col-lg-2">Bairro:</dt>
+         <dd class="col-lg-4">{{ user.profileuser.neighborhood }}</dd>
+
+         <dt class="col-lg-2">Cidade:</dt>
+         <dd class="col-lg-4">{{ user.profileuser.city }}</dd>
+         <dt class="col-lg-2">Estado:</dt>
+         <dd class="col-lg-4">{{ user.profileuser.state }}</dd>
+
+         <dt class="col-lg-2">CEP:</dt>
+         <dd class="col-lg-4">{{ user.profileuser.cep }}</dd>
+      </dl>
+   </div>
+</div>
+
+<div class="row mt-3">
+   <div class="col">
+      <h3>Resumo do carrinho</h3>
+      <p class="lead">Os produtos, quantidades e preços que você escolheu.</p>
+
+      {% include 'partials/_cart.html' %}
+   </div>   
+</div>
+
+<div class="row mt-3"> 
+   <div class="col">
+      <p class="lead text-center"> 
+         <strong> Total do carrinho: </strong> 
+         {{cart|cart_totals|format_price}}
+      </p>
+   </div>
+</div>
+   
+
+<div class="row">
+   <div class="col">
+      <a class="btn btn-block btn-primary btn-lg" href="{% url 'order:pay' %}">
+         Realizar pedido e pagar
+      </a>
+   </div>
+</div>
+
+{% endblock content %}

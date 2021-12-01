@@ -9,58 +9,7 @@
       <h3>Carrinho de compras</h3>
       <p class="lead">Os produtos, quantidades e preços que você escolheu.</p>
 
-      <div class="table-responsive">
-         <table class="table">
-            <thead>
-               <tr>
-                  <th class="d-none d-lg-block">Imagem</th>
-                  <th>Produto</th>
-                  <th>V.</th>
-                  <th>QTD.</th>
-                  <th>Total</th>
-               </tr>
-            </thead>
-
-            <tbody>
-               {% for item in cart.values %}
-                  <tr>
-                     <td class="d-none d-lg-block">
-                        <img
-                           class="cart-img"
-                           src="{{ item.image }}"
-                        />
-                     </td>
-                     <td>
-                        <a href="{% url 'product:details' item.slug %}">
-                        {{ item.product_name }}
-                        </a>
-                        <a class="ml-3" href="{% url 'product:removefromcart' %}?vid={{ item.variation_id }}">
-                           <i
-                              class="fas fa-times-circle text-danger"
-                              aria-hidden="true"
-                           >Remover</i>
-                        </a>
-                     </td>
-                     <td>{{ item.variation_name }}</td>
-                     <td>
-                        {{ item.quantity }}x 
-                        {% if item.promotional_unit_price %}
-                        {{ item.promotional_unit_price}}
-                        {% else %}
-                        {{ item.unit_price }}
-                        {% endif %}  
-
-                     </td>
-                     {% if item.promotional_quantitative_price %}
-                        <td>{{ item.promotional_quantitative_price|format_price }}</td>
-                     {% else %}
-                        <td>{{ item.quantitative_price|format_price }}</td>
-                     {% endif %}
-                  </tr>
-               {% endfor %}
-            </tbody>
-         </table>
-      </div>
+      {% include 'partials/_cart.html' %}
    </div>
 </div>
 
@@ -78,9 +27,15 @@
       </div>
    </div>
    <div class="col-lg mt-auto">
-      <a class="btn btn-lg btn-block btn-primary" href="#">
-         Finalizar a compra
+      {% if request.user.is_authenticated %}
+      <a class="btn btn-lg btn-block btn-primary" href="{% url 'product:purchasesummary' %}">
+         Comprar
+      </a>      
+      {% else %}
+      <a class="btn btn-lg btn-block btn-primary" href="{% url 'profile:create' %}">
+         Entrar ou cadastrar e comprar
       </a>
+      {% endif %}
    </div>
 </div>
 
