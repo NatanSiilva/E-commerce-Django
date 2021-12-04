@@ -4,6 +4,7 @@ from django.views import View
 from django.http import HttpResponse
 from django.contrib import messages
 from . import models
+from profile_user.models import ProfileUser
 from pprint import pprint
 
 
@@ -97,7 +98,7 @@ class AddToCartProduct(View):
 
         request.session.save()
         messages.success(
-            request, 
+            request,
             f'Produto "{product_name.upper()}"-"{variation_name.upper()}" adicionado ao '
             f'carrinho {cart[variation_id]["quantity"]}x'
         )
@@ -134,10 +135,25 @@ class Cart(View):
         }
         return render(request, 'product/cart.html', context)
 
+
 class PurchaseSummary(View):
     def get(self, *args, **kwargs):
         if not self.request.user.is_authenticated:
             return redirect('profile:create')
+
+        profile = ProfileUser.objects.filter(user=self.request.user).exists()
+
+        if not profile:
+            messages.error(
+                self.request, 
+                'Você precisa criar um perfil para realizar a compra'
+            )
+
+            return redirect('profile:create')
+
+        if not self.request.session.get('cart'):
+            messages.error(self.request, 'Seu carrinho está vazio')
+            return redirect('product:list')
 
         context = {
             'user': self.request.user,

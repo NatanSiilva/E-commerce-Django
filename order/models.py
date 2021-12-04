@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Usuário')
     total_price = models.FloatField(verbose_name='Preço Total')
+    qtd_total = models.PositiveIntegerField()
     status = models.CharField(
         default='C',
         max_length=1,
@@ -38,7 +39,7 @@ class OrderItem(models.Model):
     image = models.CharField(max_length=2000, verbose_name='Imagem')
 
     def __str__(self):
-        return f'Item do {self.pedido}'
+        return f'Item do {self.order}'
 
     class Meta:
         verbose_name = 'Item do pedido'
