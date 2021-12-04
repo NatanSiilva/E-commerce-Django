@@ -1,5 +1,5 @@
-from django.shortcuts import render, redirect
-from django.views.generic import ListView
+from django.shortcuts import render, redirect, reverse
+from django.views.generic import ListView, DetailView
 from django.views import View
 from django.contrib import messages
 from django.http import HttpResponse
@@ -8,9 +8,27 @@ from utils import utils
 from .models import Order, OrderItem
 
 
-class Pay(View):
-    def get(self, *args, **kwargs):
-        return HttpResponse('Close Order')
+class DispatchLoginRequired(View):
+    def dispatch(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return redirect('profile:create')
+
+        return super().dispatch(*args, **kwargs)
+
+
+class Pay(DispatchLoginRequired, DetailView):
+    model = Order
+
+    template_name = 'order/pay.html'
+    pk_url_kwarg = 'pk'
+    context_object_name = 'order'
+
+    def get_queryset(self):
+        qs = super().get_queryset(*args, **kwargs)
+
+        qs = qs.filter(user=self.request.user)
+
+        return qs
 
 
 class SaveOrder(View):
@@ -92,8 +110,12 @@ class SaveOrder(View):
 
         del self.request.session['cart']
 
-        # return render(self.request, self.template_name)
-        return redirect('order:list')
+        return redirect(
+            reverse(
+                'order:pay',
+                kwargs={'pk': order.id}
+            )
+        )
 
 
 class ListOrders(View):
