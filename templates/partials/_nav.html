@@ -52,15 +52,17 @@
          </li>
          {% endif %}
       </ul>
-      <form class="form-inline my-2 my-lg-0">
+      <form class="form-inline my-2 my-lg-0" method="GET" action="{% url 'product:search' %}">
          <input
+            name="search"
+            valeue="{{ request.GET.search }}"
             class="form-control mr-sm-2"
             type="search"
-            placeholder="Search"
-            aria-label="Search"
+            placeholder="Busca"
+            aria-label="Busca"
          />
          <button class="btn btn-secondary my-2 my-sm-0" type="submit">
-            Search
+            Busca
          </button>
       </form>
    </div>

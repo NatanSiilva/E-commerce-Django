@@ -1,8 +1,10 @@
+from re import search
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.views.generic import ListView, DetailView
 from django.views import View
 from django.http import HttpResponse
 from django.contrib import messages
+from django.db.models import Q
 from . import models
 from profile_user.models import ProfileUser
 from pprint import pprint
@@ -14,6 +16,28 @@ class ListProduct(ListView):
     context_object_name = 'products'
     paginate_by = 3
     ordering = ['-id']
+
+
+class Search(ListProduct):
+    def get_queryset(self, *args, **kwargs):
+        search = self.request.GET.get(
+            'search') or self.request.session['search']
+        qs = super().get_queryset(*args, **kwargs)
+
+        if not search:
+            return qs
+
+        self.request.session['search'] = search
+
+        qs = qs.filter(
+            Q(name__icontains=search) |
+            Q(short_description__icontains=search) |
+            Q(long_description__icontains=search)
+        )
+
+        self.request.session.save()
+
+        return qs
 
 
 class DetailsProduct(DetailView):
