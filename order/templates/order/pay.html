@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 {% load filters static %} 
+
+{% block title%} Pagamento {% endblock %}
+
+
 {% block content %}
 
 <div class="row">
@@ -9,66 +13,11 @@
    </div>
 </div>
 
-<div class="row">
+{% include 'partials/_order.html' %}
+
+<div class="row mt-4">
    <div class="col">
-      <h3>{{ order }}</h3>
-
-      <div class="row mt-4">
-         <div class="col-lg-2 font-weight-bold">Número do pedido:</div>
-         <div class="col-lg-4">{{ order.id }}</div>
-         <div class="col-lg-2 font-weight-bold">Total a pagar:</div>
-         <div class="col-lg-4">{{ order.total_price|format_price }}</div>
-
-         <div class="col-lg-2 font-weight-bold">QTD. Itens:</div>
-         <div class="col-lg-4">{{ order.qtd_total }}</div>
-         <div class="col-lg-2 font-weight-bold">Status:</div>
-         <div class="col-lg-4">{{ order.get_status_display }}</div>
-      </div>
-
-      <div class="row mt-4">
-         <div class="col">
-            <h3>Produtos</h3>
-         </div>
-      </div>
-
-      <div class="table-responsive mt-3">
-         <table class="table">
-            <tr>
-               <th class="d-none d-lg-block">Imagem</th>
-               <th>Produto</th>
-               <th>V.</th>
-               <th>QTD.</th>
-               <th>Total</th>
-            </tr>
-
-            {% for item in order.orderitem_set.all %}
-            <tr>
-               <td class="d-none d-lg-block">
-                  <img
-                     class="cart-img"
-                     src="{{ item.image }}"
-                  />
-               </td>
-               <td>{{ item.product }}</td>
-               <td>{{ item.variation }}</td>
-               <td>{{ item.quantity }}</td>
-               <td>
-               {% if item.promotional_price %}
-                  {{ item.promotional_price|format_price }}
-               {% else %}
-                  {{ item.price|format_price }}
-               {% endif %}
-               </td>
-            </tr>
-            {% endfor %}
-         </table>
-      </div>
-
-      <div class="row mt-4">
-         <div class="col">
-            <a href="#" class="btn btn-primary btn-block btn-lg">Pagar</a>
-         </div>
-      </div>
+      <a href="#" class="btn btn-primary btn-block btn-lg">Pagar</a>
    </div>
 </div>
 

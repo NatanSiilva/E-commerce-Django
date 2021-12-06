@@ -1,4 +1,6 @@
-{% extends 'base.html' %} {% load filters %} {% block content %}
+{% extends 'base.html' %} {% load filters %}
+{% block title %} {{order.product_name}} | {% endblock %}
+{% block content %}
 
 <div class="row">
    <div class="col-lg">

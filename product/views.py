@@ -13,6 +13,7 @@ class ListProduct(ListView):
     template_name = 'product/list.html'
     context_object_name = 'products'
     paginate_by = 3
+    ordering = ['-id']
 
 
 class DetailsProduct(DetailView):
@@ -145,7 +146,7 @@ class PurchaseSummary(View):
 
         if not profile:
             messages.error(
-                self.request, 
+                self.request,
                 'Você precisa criar um perfil para realizar a compra'
             )
 

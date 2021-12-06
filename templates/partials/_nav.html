@@ -21,6 +21,9 @@
          </li>
          {% if request.user.is_authenticated %}
          <li class="nav-item">
+            <a class="nav-link" href="{% url 'order:list' %}">Meus pedidos</a>
+         </li>
+         <li class="nav-item">
             <a class="nav-link" href="{% url 'profile:create' %}">conta</a>
          </li>
          <li class="nav-item">

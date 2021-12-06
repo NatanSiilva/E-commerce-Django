@@ -8,27 +8,27 @@ from utils import utils
 from .models import Order, OrderItem
 
 
-class DispatchLoginRequired(View):
+class DispatchLoginRequiredMixin(View):
     def dispatch(self, *args, **kwargs):
         if not self.request.user.is_authenticated:
             return redirect('profile:create')
 
         return super().dispatch(*args, **kwargs)
 
-
-class Pay(DispatchLoginRequired, DetailView):
-    model = Order
-
-    template_name = 'order/pay.html'
-    pk_url_kwarg = 'pk'
-    context_object_name = 'order'
-
-    def get_queryset(self):
+    def get_queryset(self, *args, **kwargs):
         qs = super().get_queryset(*args, **kwargs)
 
         qs = qs.filter(user=self.request.user)
 
         return qs
+
+
+class Pay(DispatchLoginRequiredMixin, DetailView):
+    model = Order
+
+    template_name = 'order/pay.html'
+    pk_url_kwarg = 'pk'
+    context_object_name = 'order'
 
 
 class SaveOrder(View):
@@ -118,11 +118,16 @@ class SaveOrder(View):
         )
 
 
-class ListOrders(View):
-    def get(self, *args, **kwargs):
-        return HttpResponse('Lista de pedidos')
+class Details(DispatchLoginRequiredMixin, ListView):
+    model = Order
+    context_object_name = 'orders'
+    template_name = 'order/details.html'
+    pk_url_kwarg = 'pk'
 
 
-class Details(View):
-    def get(self, *args, **kwargs):
-        return HttpResponse('Details')
+class ListOrders(DispatchLoginRequiredMixin, ListView):
+    model = Order
+    template_name = 'order/list.html'
+    context_object_name = 'orders'
+    paginate_by = 3
+    ordering = ['-id']
