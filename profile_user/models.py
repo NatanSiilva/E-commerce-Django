@@ -58,6 +58,17 @@ class ProfileUser(models.Model):
     def clean(self):
         error_messages = {}
 
+        cpf_send = self.cpf or None
+        cpf_save = None
+
+        profile = ProfileUser.objects.filter(cpf=cpf_send).first()
+
+        if profile:
+            cpf_save = profile.cpf
+
+            if cpf_save is not None and self.pk != profile.pk:
+                error_messages['cpf'] = 'Digite um CPF válido'
+
         if not valid_cpf(self.cpf):
             error_messages['cpf'] = 'Digite um CPF válido'
 
